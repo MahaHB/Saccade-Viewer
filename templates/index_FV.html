@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Free viewing saccades</title>
+    <script src="https://cdn.plot.ly/plotly-3.7.0.min.js" charset="utf-8"></script>
+    <style>
+        .plot-div {
+            display: inline-block;
+            margin: 5px;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        form {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin: 5px;
+        }
+        h2, h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div style="color: red; margin: 10px 0;">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <h1>Free Viewing Saccades</h1>
+    <div style="text-align:center;">
+
+        <button onclick="window.location.href='{{ url_for('ipast.view') }}'">Go to IPAST Page</button>
+    </div>
+
+
+    <div class="form-container">
+        <h2>Select Subject</h2>
+        <form action="{{ url_for('fv.view') }}" method="post">
+            <button type="submit" name="action" value="CTRL_1">CTRL_1</button>
+            <button type="submit" name="action" value="CTRL_2">CTRL_2</button>
+            <button type="submit" name="action" value="CTRL_3">CTRL_3</button>
+            <button type="submit" name="action" value="CTRL_4">CTRL_4</button>
+        </form>
+        {% if session.patient %}
+            <h2>Selected subject: {{ session.patient }}</h2>
+        {% endif %}
+
+        <form method="post">
+            <label for="movie_number">Select Movie Number:</label>
+            <input type="number" id="movie_number" name="movie_number" min="0"
+                   value="{{ session.get('movie_number', 0) }}" required>
+            <input type="submit" value="Load Movie">
+        </form>
+
+        <form method="post">
+            <label for="sac_number">Select Saccade Number:</label>
+            <input type="number" id="sac_number" name="sac_number" min="0"
+                   value="{{ session.get('sac_number', 0) }}" required>
+            <input type="submit" value="Submit Saccade">
+        </form>
+
+        <form method="post">
+            <button type="submit" name="action" value="backward">Previous Saccade</button>
+            <button type="submit" name="action" value="forward">Next Saccade</button>
+        </form>
+
+        <h2>Selected Saccade: {{ session.sac_number }}</h2>
+    </div>
+
+    <div id="plot1" class="plot-div"></div>
+    <div id="plot2" class="plot-div"></div>
+    <div id="plot3" class="plot-div"></div>
+    <div id="plot4" class="plot-div"></div>
+    <div id="plot5" class="plot-div"></div>
+    <div id="plot6" class="plot-div"></div>
+    <div id="plot7" class="plot-div"></div>
+
+    <script>
+        var squareLayout = {
+            width: 400,
+            height: 400,
+            margin: { l: 20, r: 20, b: 20, t: 20, pad: 4 }
+        };
+
+        var graphJSON1 = {{ graphJSON1|safe }};
+        var graphJSON2 = {{ graphJSON2|safe }};
+        var graphJSON3 = {{ graphJSON3|safe }};
+        var graphJSON4 = {{ graphJSON4|safe }};
+        var graphJSON5 = {{ graphJSON5|safe }};
+        var graphJSON6 = {{ graphJSON6|safe }};
+        var graphJSON7 = {{ graphJSON7|safe }};
+
+        function updateLayout(layout) {
+            var update = {
+                'xaxis.range': [layout['xaxis.range[0]'], layout['xaxis.range[1]']]
+            };
+            if (layout['xaxis.range[0]'] !== undefined) {
+                Plotly.relayout('plot1', update);
+                Plotly.relayout('plot2', update);
+                Plotly.relayout('plot3', update);
+                Plotly.relayout('plot4', update);
+            }
+        }
+
+        function applyFixedAxisLayout(graphJSON) {
+            if (!graphJSON.layout) {
+                graphJSON.layout = {};
+            }
+            var xMin = Math.min(...graphJSON.data[0].x);
+            var xMax = Math.max(...graphJSON.data[0].x);
+            var yMin = Math.min(...graphJSON.data[0].y);
+            var yMax = Math.max(...graphJSON.data[0].y);
+
+            var xCenter = (xMin + xMax) / 2;
+            var yCenter = (yMin + yMax) / 2;
+
+            var newXMin = xCenter - 7;
+            var newXMax = xCenter + 7;
+            var newYMin = yCenter - 7;
+            var newYMax = yCenter + 7;
+
+            Object.assign(graphJSON.layout, {
+                xaxis: { range: [newXMin, newXMax] },
+                yaxis: { range: [newYMin, newYMax] },
+                width: 500,
+                height: 500
+            });
+        }
+
+        {#applyFixedAxisLayout(graphJSON6);#}
+
+        Plotly.newPlot('plot1', graphJSON1.data, graphJSON1.layout).then(() => {
+            document.getElementById('plot1').on('plotly_relayout', updateLayout);
+        });
+        Plotly.newPlot('plot2', graphJSON2.data, graphJSON2.layout).then(() => {
+            document.getElementById('plot2').on('plotly_relayout', updateLayout);
+        });
+        Plotly.newPlot('plot3', graphJSON3.data, graphJSON3.layout).then(() => {
+            document.getElementById('plot3').on('plotly_relayout', updateLayout);
+        });
+        Plotly.newPlot('plot4', graphJSON4.data, graphJSON4.layout).then(() => {
+            document.getElementById('plot4').on('plotly_relayout', updateLayout);
+        });
+        Plotly.newPlot('plot5', graphJSON5.data, graphJSON5.layout).then(() => {
+            document.getElementById('plot5').on('plotly_relayout', updateLayout);
+        });
+        Plotly.newPlot('plot6', graphJSON6.data, graphJSON6.layout);
+        Plotly.newPlot('plot7', graphJSON7.data, graphJSON7.layout);
+    </script>
+
+</body>
+</html>

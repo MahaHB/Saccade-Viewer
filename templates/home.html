@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saccade Viewer</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f3f6fb, #e4ebf5);
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 950px;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #1f2937;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #6b7280;
+            margin-bottom: 55px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            flex-wrap: wrap;
+        }
+
+        .task-button {
+            width: 360px;
+            height: 170px;
+            border: none;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+            font-size: 25px;
+            font-weight: 600;
+            color: #1f2937;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .task-button:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.16);
+        }
+
+        .task-button:active {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 800px) {
+            h1 {
+                font-size: 38px;
+            }
+
+            .task-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Saccade Viewer</h1>
+    <div class="subtitle">
+        Interactive visualization of eye movement recordings
+    </div>
+
+    <div class="buttons">
+
+        <button class="task-button"
+                onclick="window.location.href='{{ url_for('fv.view') }}'">
+            Free Viewing Saccades
+        </button>
+
+        <button class="task-button"
+                onclick="window.location.href='{{ url_for('ipast.view') }}'">
+            Interleaved Pro Anti Saccade Task
+        </button>
+
+    </div>
+
+</div>
+
+</body>
+</html>
